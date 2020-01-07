@@ -9,8 +9,6 @@ this short tool can flash the CH55x series with bootloader version 1.1 and 2.31
 rund this tool via the filename and plus the bin file you want to flash example:
 '''ch55xV2flasher.py blink.bin'''
 
-support for: CH551, CH552, CH554, CH558 and CH559
-
 Copyright by [ATCnetz.de](https://ATCnetz.de) (Aaron Christophel) you can edit and use this code as you want if you mention me :)
 
 you need to install python2.7 and pyusb to use this flasher or use the compiled exe
