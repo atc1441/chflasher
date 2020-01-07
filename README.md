@@ -12,7 +12,7 @@ Run this tool via the filename and plus the bin file you want to flash example:
 ch55xV2flasher.py blink.bin
 ```
 
-Copyright by [ATCnetz.de](https://ATCnetz.de) (Aaron Christophel) you can edit and use this code as you want if you mention me :)
+Copyright by [ATCnetz.de](https://ATCnetz.de) [youtube/1200230](https://www.youtube.com/user/12002230/) (Aaron Christophel) you can edit and use this code as you want if you mention me :)
 
 you need to install python2.7 and pyusb to use this flasher or use the compiled exe
 install it via:
