@@ -15,11 +15,11 @@ Copyright by https://ATCnetz.de (Aaron Christophel) you can edit and use this co
 
 you need to install python2.7 and pyusb to use this flasher or use the compiled exe
 install it via:
-´´pip install pyusb´´
+"pip install pyusb"
 
 on linux run: 
-´´sudo apt-get install python-pip´´
-´´sudo pip install pyusb´´
+"sudo apt-get install python-pip"
+"sudo pip install pyusb"
 
 on windows you need the zadig tool https://zadig.akeo.ie/ to install the right driver
 click on Options and List all devices to show the USB Module, then install the libusb-win32 driver for the CH chip
