@@ -1,4 +1,4 @@
-# chflasher
+# CHflasher
 
 
 ### The CHflasher is a short python script to flash the cheap CH55x Microcontroller from the Company WCH via command line tool.
