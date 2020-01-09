@@ -14,7 +14,7 @@ ch55xV2flasher.py blink.bin
 
 Copyright by Aaron Christophel [ATCnetz.de](https://ATCnetz.de) and [youtube/1200230](https://www.youtube.com/user/12002230/) you can edit and use this code as you want if you mention me :)
 
-you need to install python2.7 and pyusb to use this flasher or use the compiled exe
+you need to install python2.7 or python3 and pyusb to use this flasher or use the compiled exe
 install it via:
 ```
 pip install pyusb
