@@ -8,6 +8,7 @@
 
 # Copyright by https://ATCnetz.de (Aaron Christophel) you can edit and use this code as you want if you mention me :)
 
+# now works with Python 2.7 or Python 3 thanks to adlerweb
 # you need to install pyusb to use this flasher install it via pip install pyusb
 # on linux run: sudo apt-get install python-pip and sudo pip install pyusb
 # on windows you need the zadig tool https://zadig.akeo.ie/ to install the right driver
@@ -28,7 +29,7 @@ mode_verify_v2 = 0xa6
 
 dev = usb.core.find(idVendor=0x4348, idProduct=0x55e0)
 if dev is None:
-    print 'No CH55x device found, check driver please'
+    print('No CH55x device found, check driver please')
     sys.exit()
 dev.set_configuration()
 
@@ -42,7 +43,7 @@ assert epout is not None
 assert epin is not None
 
 def errorexit(errormsg):
-    print 'Error: '+errormsg
+    print('Error: '+errormsg)
     sys.exit()
 
 def sendcmd(cmd):
@@ -65,13 +66,13 @@ def erasechipv1():
         buffer = sendcmd((0xa9, 0x02, 0x00, x*4))
         if buffer[0] != 0x00:
             errorexit('Erase Failed')
-    print 'Flash Erased'
+    print('Flash Erased')
         
 def erasechipv2():
     buffer = sendcmd((0xa4,0x01,0x00,device_erase_size))
     if buffer[4] != 0x00:
         errorexit('Erase Failed')
-    print 'Flash Erased'
+    print('Flash Erased')
 
 def exitbootloaderv1():
     epout.write((0xa5, 0x02, 0x01, 0x00))
@@ -84,7 +85,7 @@ def identchipv1():
     identanswer = sendcmd(detect_chip_cmd_v1)
     if len(identanswer) == 2:
         chipid = identanswer[0]
-        print 'Found CH5'+str(chipid-30)
+        print('Found CH5'+str(chipid-30))
         if chipid == 0x58:
             device_flash_size = 64
             device_erase_size = 11
@@ -95,7 +96,7 @@ def identchipv1():
         errorexit('ident chip')
     cfganswer = sendcmd((0xbb, 0x00))
     if len(cfganswer) == 2:
-        print 'Bootloader version: '+str((cfganswer[0] >> 4))+ '.' + str((cfganswer[0] & 0xf))
+        print('Bootloader version: '+str((cfganswer[0] >> 4))+ '.' + str((cfganswer[0] & 0xf)))
     else:
         errorexit('ident bootloader')
 
@@ -104,7 +105,7 @@ def identchipv2():
     identanswer = sendcmd(detect_chip_cmd_v2)
     if len(identanswer) == 6:
         chipid = identanswer[4]
-        print 'Found CH5'+str(chipid-30)
+        print('Found CH5'+str(chipid-30))
         if chipid == 0x58:
             device_flash_size = 64
             device_erase_size = 11
@@ -115,7 +116,7 @@ def identchipv2():
         errorexit('ident chip')
     cfganswer = sendcmd((0xa7, 0x02, 0x00, 0x1f, 0x00))
     if len(cfganswer) == 30:
-        print 'Bootloader version: '+str(cfganswer[19])+'.'+str(cfganswer[20])+str(cfganswer[21])
+        print('Bootloader version: '+str(cfganswer[19])+'.'+str(cfganswer[20])+str(cfganswer[21]))
         keyinputv2(cfganswer)
     else:
         errorexit('ident bootloader')
@@ -137,7 +138,7 @@ def writefilev1(fileName, mode):
     global chipid
     bytes = open(fileName, 'rb').read()
     if mode == mode_write_v1:
-        print 'Filesize: '+str(len(bytes))+' bytes'
+        print('Filesize: '+str(len(bytes))+' bytes')
     i = len(bytes)
     curr_addr = 0
     pkt_length = 0
@@ -153,7 +154,7 @@ def writefilev1(fileName, mode):
         outbuffer[3] = ((curr_addr >> 8) & 0xff)
         for x in range(pkt_length):
             outbuffer[x+4] = bytes[curr_addr+x]
-        #print ''.join('{:02x}'.format(x) for x in outbuffer)
+        #print(''.join('{:02x}'.format(x) for x in outbuffer))
         buffer = sendcmd(outbuffer)
         curr_addr += pkt_length
         i -= pkt_length
@@ -164,15 +165,15 @@ def writefilev1(fileName, mode):
                 elif mode == mode_verify_v1:
                     errorexit('Verify Failed!!!')
     if mode == mode_write_v1:
-        print 'Writing success'
+        print('Writing success')
     elif mode == mode_verify_v1:
-        print 'Verify success'
+        print('Verify success')
 
 def writefilev2(fileName, mode):
     global chipid
     bytes = open(fileName, 'rb').read()
     if mode == mode_write_v2:
-        print 'Filesize: '+str(len(bytes))+' bytes'
+        print('Filesize: '+str(len(bytes))+' bytes')
     if len(bytes) < 256:
         errorexit('Something wrong with the bin file')
     i = len(bytes)
@@ -197,7 +198,7 @@ def writefilev2(fileName, mode):
         for x in range(pkt_length+8):
             if x % 8 == 7:
                 outbuffer[x] ^= chipid
-        #print ''.join('{:02x}'.format(x) for x in outbuffer)
+        #print(''.join('{:02x}'.format(x) for x in outbuffer))
         buffer = sendcmd(outbuffer)
         curr_addr += pkt_length
         i -= pkt_length
@@ -208,9 +209,9 @@ def writefilev2(fileName, mode):
                 elif mode == mode_verify:
                     errorexit('Verify Failed!!!')
     if mode == mode_write_v2:
-        print 'Writing success'
+        print('Writing success')
     elif mode == mode_verify_v2:
-        print 'Verify success'
+        print('Verify success')
     
 if len(sys.argv) != 2:
     errorexit('no bin file selected')   
