@@ -14,7 +14,7 @@
 # on windows you need the zadig tool https://zadig.akeo.ie/ to install the right driver
 # click on Options and List all devices to show the USB Module, then install the libusb-win32 driver
 
-import usb.core, usb.util, sys, struct
+import usb.core, usb.util, sys, struct, traceback, platform
 detect_chip_cmd_v1 = (0xa2, 0x13, 0x55, 0x53, 0x42, 0x20, 0x44, 0x42, 0x47, 0x20, 0x43, 0x48, 0x35, 0x35, 0x39, 0x20, 0x26, 0x20, 0x49, 0x53, 0x50, 0x00)
 detect_chip_cmd_v2 = (0xa1, 0x12, 0x00, 0x52, 0x11, 0x4d, 0x43, 0x55, 0x20, 0x49, 0x53, 0x50, 0x20, 0x26, 0x20, 0x57, 0x43, 0x48, 0x2e, 0x43, 0x4e)
 
@@ -31,7 +31,26 @@ dev = usb.core.find(idVendor = 0x4348, idProduct = 0x55e0)
 if dev is None:
     print('No CH55x device found, check driver please')
     sys.exit()
-dev.set_configuration()
+
+try:
+    dev.set_configuration()
+except usb.core.USBError as ex:
+    print('Could not access USB Device')
+
+    if str(ex).startswith('[Errno 13]') and platform.system() == 'Linux':
+        print('No access to USB Device, configure udev or execute as root (sudo)')
+        print('For udev create /etc/udev/rules.d/99-ch55x.rules')
+        print('with one line:')
+        print('---')
+        print('SUBSYSTEM=="usb", ATTR{idVendor}=="4348", ATTR{idProduct}=="55e0", MODE="666"')
+        print('---')
+        print('Restart udev: sudo service udev restart')
+        print('Reconnect device, should work now!')
+        sys.exit(2)
+
+    traceback.print_exc()
+    sys.exit(2)
+
 
 cfg = dev.get_active_configuration()
 intf = cfg[(0, 0)]
