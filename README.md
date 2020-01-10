@@ -14,8 +14,7 @@ ch55xV2flasher.py blink.bin
 
 Copyright by Aaron Christophel [ATCnetz.de](https://ATCnetz.de) and [youtube/1200230](https://www.youtube.com/user/12002230/) you can edit and use this code as you want if you mention me :)
 
-You can find a video manual here from me:(click on it)
-
+You can find a video manual on youtube from me:(click on the picture)
 [![YoutubeVideo](https://img.youtube.com/vi/uhSHcyjUaic/0.jpg)](https://www.youtube.com/watch?v=uhSHcyjUaic)
 
 
