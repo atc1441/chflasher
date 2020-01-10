@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # this short tool can flash the CH55x series with bootloader version 1.1 and 2.31
 # run this tool via the filename and plus the bin file you want to flash example: 
@@ -27,14 +27,14 @@ mode_verify_v1 = 0xa7
 mode_write_v2 = 0xa5
 mode_verify_v2 = 0xa6
 
-dev = usb.core.find(idVendor=0x4348, idProduct=0x55e0)
+dev = usb.core.find(idVendor = 0x4348, idProduct = 0x55e0)
 if dev is None:
     print('No CH55x device found, check driver please')
     sys.exit()
 dev.set_configuration()
 
 cfg = dev.get_active_configuration()
-intf = cfg[(0,0)]
+intf = cfg[(0, 0)]
 
 epout = usb.util.find_descriptor(intf, custom_match = lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
 epin = usb.util.find_descriptor(intf, custom_match = lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
@@ -43,8 +43,8 @@ assert epout is not None
 assert epin is not None
 
 def errorexit(errormsg):
-    print('Error: '+errormsg)
-    sys.exit()
+    print('Error: ' + errormsg)
+    sys.exit(1)
 
 def sendcmd(cmd):
     epout.write(cmd)
@@ -63,13 +63,13 @@ def detectchipversion():
 def erasechipv1():
     sendcmd((0xa6, 0x04, 0x00, 0x00, 0x00, 0x00))
     for x in range(device_flash_size):
-        buffer = sendcmd((0xa9, 0x02, 0x00, x*4))
+        buffer = sendcmd((0xa9, 0x02, 0x00, x * 4))
         if buffer[0] != 0x00:
             errorexit('Erase Failed')
     print('Flash Erased')
         
 def erasechipv2():
-    buffer = sendcmd((0xa4,0x01,0x00,device_erase_size))
+    buffer = sendcmd((0xa4, 0x01, 0x00, device_erase_size))
     if buffer[4] != 0x00:
         errorexit('Erase Failed')
     print('Flash Erased')
@@ -78,14 +78,14 @@ def exitbootloaderv1():
     epout.write((0xa5, 0x02, 0x01, 0x00))
 
 def exitbootloaderv2():
-    epout.write((0xa2,0x01,0x00,0x01))
+    epout.write((0xa2, 0x01, 0x00, 0x01))
 
 def identchipv1():
     global chipid,device_flash_size,device_erase_size
     identanswer = sendcmd(detect_chip_cmd_v1)
     if len(identanswer) == 2:
         chipid = identanswer[0]
-        print('Found CH5'+str(chipid-30))
+        print('Found CH5' + str(chipid - 30))
         if chipid == 0x58:
             device_flash_size = 64
             device_erase_size = 11
@@ -96,16 +96,16 @@ def identchipv1():
         errorexit('ident chip')
     cfganswer = sendcmd((0xbb, 0x00))
     if len(cfganswer) == 2:
-        print('Bootloader version: '+str((cfganswer[0] >> 4))+ '.' + str((cfganswer[0] & 0xf)))
+        print('Bootloader version: ' + str((cfganswer[0] >> 4)) + '.' + str((cfganswer[0] & 0xf)))
     else:
         errorexit('ident bootloader')
 
 def identchipv2():
-    global chipid,device_flash_size,device_erase_size
+    global chipid, device_flash_size, device_erase_size
     identanswer = sendcmd(detect_chip_cmd_v2)
     if len(identanswer) == 6:
         chipid = identanswer[4]
-        print('Found CH5'+str(chipid-30))
+        print('Found CH5' + str(chipid - 30))
         if chipid == 0x58:
             device_flash_size = 64
             device_erase_size = 11
@@ -116,7 +116,7 @@ def identchipv2():
         errorexit('ident chip')
     cfganswer = sendcmd((0xa7, 0x02, 0x00, 0x1f, 0x00))
     if len(cfganswer) == 30:
-        print('Bootloader version: '+str(cfganswer[19])+'.'+str(cfganswer[20])+str(cfganswer[21]))
+        print('Bootloader version: ' + str(cfganswer[19]) + '.' + str(cfganswer[20]) + str(cfganswer[21]))
         keyinputv2(cfganswer)
     else:
         errorexit('ident bootloader')
@@ -133,12 +133,12 @@ def keyinputv2(cfganswer):
     for x in range(0x30):
         outbuffer[x+3] = checksum & 0xff
     sendcmd(outbuffer)
-        
+
 def writefilev1(fileName, mode):
     global chipid
     bytes = open(fileName, 'rb').read()
     if mode == mode_write_v1:
-        print('Filesize: '+str(len(bytes))+' bytes')
+        print('Filesize: ' + str(len(bytes)) + ' bytes')
     i = len(bytes)
     curr_addr = 0
     pkt_length = 0
@@ -153,7 +153,7 @@ def writefilev1(fileName, mode):
         outbuffer[2] = (curr_addr & 0xff)
         outbuffer[3] = ((curr_addr >> 8) & 0xff)
         for x in range(pkt_length):
-            outbuffer[x+4] = bytes[curr_addr+x]
+            outbuffer[x + 4] = bytes[curr_addr + x]
         #print(''.join('{:02x}'.format(x) for x in outbuffer))
         buffer = sendcmd(outbuffer)
         curr_addr += pkt_length
@@ -173,7 +173,7 @@ def writefilev2(fileName, mode):
     global chipid
     bytes = open(fileName, 'rb').read()
     if mode == mode_write_v2:
-        print('Filesize: '+str(len(bytes))+' bytes')
+        print('Filesize: ' + str(len(bytes)) + ' bytes')
     if len(bytes) < 256:
         errorexit('Something wrong with the bin file')
     i = len(bytes)
@@ -194,8 +194,8 @@ def writefilev2(fileName, mode):
         outbuffer[6] = 0x00
         outbuffer[7] = i & 0xff
         for x in range(pkt_length):
-            outbuffer[x+8] = bytes[curr_addr+x]
-        for x in range(pkt_length+8):
+            outbuffer[x + 8] = bytes[curr_addr + x]
+        for x in range(pkt_length + 8):
             if x % 8 == 7:
                 outbuffer[x] ^= chipid
         #print(''.join('{:02x}'.format(x) for x in outbuffer))
@@ -219,13 +219,13 @@ if len(sys.argv) != 2:
 if detectchipversion() == 0:
     identchipv1()
     erasechipv1()
-    writefilev1(sys.argv[1],mode_write_v1)
-    writefilev1(sys.argv[1],mode_verify_v1)
+    writefilev1(sys.argv[1], mode_write_v1)
+    writefilev1(sys.argv[1], mode_verify_v1)
     exitbootloaderv1()
 else:
     identchipv2()
     erasechipv2()
-    writefilev2(sys.argv[1],mode_write_v2)
-    writefilev2(sys.argv[1],mode_verify_v2)
+    writefilev2(sys.argv[1], mode_write_v2)
+    writefilev2(sys.argv[1], mode_verify_v2)
     exitbootloaderv2()
-    
+
