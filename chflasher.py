@@ -225,7 +225,7 @@ def writefilev2(fileName, mode):
             if buffer[4] != 0x00 and buffer[4] != 0xfe:
                 if mode == mode_write_v2:
                     errorexit('Write Failed!!!')
-                elif mode == mode_verify:
+                elif mode == mode_verify_v2:
                     errorexit('Verify Failed!!!')
     if mode == mode_write_v2:
         print('Writing success')
