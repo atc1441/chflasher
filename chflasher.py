@@ -222,7 +222,7 @@ def writefilev2(fileName, mode):
         curr_addr += pkt_length
         i -= pkt_length
         if buffer != None:
-            if buffer[4] != 0x00 and buffer[4] != 0xfe:
+            if buffer[4] != 0x00 and buffer[4] != 0xfe and buffer[4] != 0xf5:
                 if mode == mode_write_v2:
                     errorexit('Write Failed!!!')
                 elif mode == mode_verify_v2:
